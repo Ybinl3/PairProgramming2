@@ -31,12 +31,34 @@ public class MusicPlayer implements MediaPlayer.OnCompletionListener{
     }
     public void playMusic(){
         player = MediaPlayer.create(this.musicService, MUSICPATH[musicIndex]);
+        player.start();
+        player.setOnCompletionListener(this);
+        musicService.onUpdateMusicName(getMusicName());
+        musicStatus = 1;
 
+    }
 
+    public void pauseMusic() {
+        if(player!= null && player.isPlaying()){
+            player.pause();
+            currentPosition = player.getCurrentPosition();
+            musicStatus = 2;
+        }
+    }
+
+    public void resumeMusic(){
+        if(player != null){
+            player.seekTo(currentPosition);
+            player.start();
+            musicStatus = 1;
+        }
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-
+        musicIndex = (musicIndex + 1) % MUSICNAME.length;
+        player.release();
+        player = null;
+        playMusic();
     }
 }
